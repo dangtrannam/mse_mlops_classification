@@ -1,0 +1,8 @@
+torch
+scikit-learn
+mlflow
+flask
+numpy
+pyyaml
+tqdm
+gradio 
