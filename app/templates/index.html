@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MLP Classifier</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            line-height: 1.6;
+        }
+        h1 {
+            color: #333;
+            text-align: center;
+        }
+        .container {
+            background-color: #f9f9f9;
+            border-radius: 5px;
+            padding: 20px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: bold;
+        }
+        .form-control {
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 20px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            box-sizing: border-box;
+            font-family: monospace;
+        }
+        button {
+            background-color: #4CAF50;
+            color: white;
+            padding: 12px 20px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 16px;
+        }
+        button:hover {
+            background-color: #45a049;
+        }
+        .info {
+            background-color: #e7f3fe;
+            border-left: 6px solid #2196F3;
+            padding: 10px;
+            margin-bottom: 20px;
+        }
+        .example {
+            font-family: monospace;
+            background-color: #f5f5f5;
+            padding: 10px;
+            border-radius: 4px;
+            margin-top: 10px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>MLP Classifier Prediction</h1>
+        
+        <div class="info">
+            <p>This application uses a PyTorch MLP classifier trained with MLflow. Enter 20 comma-separated feature values to get a prediction.</p>
+            <p>The model classifies input into one of two classes (Class 0 or Class 1).</p>
+        </div>
+        
+        <form action="/predict" method="post">
+            <div>
+                <label for="features">Enter 20 feature values (comma-separated):</label>
+                <textarea 
+                    id="features" 
+                    name="features" 
+                    class="form-control" 
+                    rows="4" 
+                    placeholder="e.g., 0.5, 1.2, -0.3, 0.8, 1.5, -0.7, 0.2, 0.9, -1.1, 0.4, 0.6, -0.5, 1.0, -0.2, 0.3, 0.7, -0.9, 1.3, -0.4, 0.1" 
+                    required></textarea>
+            </div>
+            
+            <div class="example">
+                <p><strong>Example:</strong></p>
+                <p>0.5, 1.2, -0.3, 0.8, 1.5, -0.7, 0.2, 0.9, -1.1, 0.4, 0.6, -0.5, 1.0, -0.2, 0.3, 0.7, -0.9, 1.3, -0.4, 0.1</p>
+            </div>
+            
+            <button type="submit">Predict</button>
+        </form>
+    </div>
+</body>
+</html> 
