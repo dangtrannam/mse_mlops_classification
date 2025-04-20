@@ -44,9 +44,20 @@
             border-radius: 4px;
             cursor: pointer;
             font-size: 16px;
+            margin-right: 10px;
         }
         button:hover {
             background-color: #45a049;
+        }
+        .randomize-btn {
+            background-color: #2196F3;
+        }
+        .randomize-btn:hover {
+            background-color: #0b7dda;
+        }
+        .button-group {
+            display: flex;
+            gap: 10px;
         }
         .info {
             background-color: #e7f3fe;
@@ -72,7 +83,7 @@
             <p>The model classifies input into one of two classes (Class 0 or Class 1).</p>
         </div>
         
-        <form action="/predict" method="post">
+        <form action="/predict" method="post" id="prediction-form">
             <div>
                 <label for="features">Enter 20 feature values (comma-separated):</label>
                 <textarea 
@@ -89,8 +100,24 @@
                 <p>0.5, 1.2, -0.3, 0.8, 1.5, -0.7, 0.2, 0.9, -1.1, 0.4, 0.6, -0.5, 1.0, -0.2, 0.3, 0.7, -0.9, 1.3, -0.4, 0.1</p>
             </div>
             
-            <button type="submit">Predict</button>
+            <div class="button-group">
+                <button type="submit">Predict</button>
+                <button type="button" class="randomize-btn" onclick="generateRandomFeatures()">Randomize</button>
+            </div>
         </form>
     </div>
+
+    <script>
+        function generateRandomFeatures() {
+            // Generate 20 random features between -2 and 2
+            const features = [];
+            for (let i = 0; i < 20; i++) {
+                features.push((Math.random() * 4 - 2).toFixed(4));
+            }
+            
+            // Set the features in the textarea
+            document.getElementById('features').value = features.join(', ');
+        }
+    </script>
 </body>
 </html> 

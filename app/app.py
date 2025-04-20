@@ -1,14 +1,28 @@
 import os
+import sys
 import numpy as np
 from flask import Flask, request, render_template, jsonify
 import mlflow.pytorch
 import torch
 
+# Add src directory to Python path
+current_dir = os.path.dirname(os.path.abspath(__file__))
+src_dir = os.path.join(os.path.dirname(current_dir), "src")
+sys.path.append(src_dir)
+
 app = Flask(__name__)
+
+# Set MLflow tracking URI explicitly
+mlflow.set_tracking_uri("file:///D:/Dev/MSE_projects/mse-mlops-assignment/mlruns")
+
+# Determine device
+device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+print(f"Using device: {device}")
 
 # Load the model from MLflow model registry
 try:
     model = mlflow.pytorch.load_model("models:/MLPClassifier/Staging")
+    model.to(device)  # Move model to the appropriate device
     model.eval()
     print("Successfully loaded model from MLflow model registry")
 except Exception as e:
@@ -32,8 +46,8 @@ def predict():
             return render_template('result.html', prediction=None, 
                                   error=f"Expected 20 features, got {len(features)}. Please provide exactly 20 comma-separated values.")
         
-        # Convert to tensor
-        X = torch.FloatTensor([features])
+        # Convert to tensor and move to the same device as the model
+        X = torch.FloatTensor([features]).to(device)
         
         # Make prediction
         with torch.no_grad():

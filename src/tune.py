@@ -38,7 +38,8 @@ def perform_grid_search():
                 activation=activation,
                 batch_size=32,
                 num_epochs=10,
-                dropout_rate=0.2
+                dropout_rate=0.2,
+                use_existing_run=True
             )
             
             run_id = run.info.run_id

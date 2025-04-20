@@ -10,10 +10,18 @@ import mlflow
 import mlflow.pytorch
 from tqdm import tqdm
 import argparse
+from mlflow.models.signature import infer_signature
+from contextlib import nullcontext
 
 from model import MLP
 
-def load_data(data_path="../data/classification_data.npz", test_size=0.2, batch_size=32):
+def load_data(data_path=None, test_size=0.2, batch_size=32):
+    if data_path is None:
+        # Use a path relative to the current script
+        current_dir = os.path.dirname(os.path.abspath(__file__))
+        data_dir = os.path.join(os.path.dirname(current_dir), "data")
+        data_path = os.path.join(data_dir, "classification_data.npz")
+    
     data = np.load(data_path)
     X, y = data["X"], data["y"]
     
@@ -135,17 +143,30 @@ def run_training(
     activation="relu",
     batch_size=32,
     num_epochs=10,
-    dropout_rate=0.2
+    dropout_rate=0.2,
+    use_existing_run=False
 ):
-    mlflow.set_experiment("mlp_classification")
+    if not use_existing_run:
+        mlflow.set_experiment("mlp_classification")
+        run_context = mlflow.start_run()
+    else:
+        run_context = nullcontext()
     
-    with mlflow.start_run():
-        mlflow.log_param("learning_rate", learning_rate)
-        mlflow.log_param("hidden_dims", hidden_dims)
-        mlflow.log_param("activation", activation)
-        mlflow.log_param("batch_size", batch_size)
-        mlflow.log_param("num_epochs", num_epochs)
-        mlflow.log_param("dropout_rate", dropout_rate)
+    with run_context:
+        if not use_existing_run:
+            mlflow.log_param("learning_rate", learning_rate)
+            mlflow.log_param("hidden_dims", hidden_dims)
+            mlflow.log_param("activation", activation)
+            mlflow.log_param("batch_size", batch_size)
+            mlflow.log_param("num_epochs", num_epochs)
+            mlflow.log_param("dropout_rate", dropout_rate)
+        else:
+            mlflow.log_param("learning_rate", learning_rate)
+            mlflow.log_param("hidden_dims", hidden_dims)
+            mlflow.log_param("activation", activation)
+            mlflow.log_param("batch_size", batch_size)
+            mlflow.log_param("num_epochs", num_epochs)
+            mlflow.log_param("dropout_rate", dropout_rate)
         
         train_loader, test_loader, input_dim, output_dim = load_data(batch_size=batch_size)
         
@@ -176,7 +197,30 @@ def run_training(
         final_metrics = evaluate_model(trained_model, test_loader, criterion, device)
         print(f"Final Metrics: Accuracy = {final_metrics['accuracy']:.4f}, F1 = {final_metrics['f1']:.4f}")
         
-        mlflow.pytorch.log_model(trained_model, "model")
+        # Create a sample input for the model signature
+        sample_input = torch.randn(1, input_dim).to(device)
+        
+        # Get model prediction on the sample input
+        with torch.no_grad():
+            sample_output = trained_model(sample_input)
+            
+        # Convert tensors to numpy for MLflow
+        sample_input_np = sample_input.cpu().numpy()
+        sample_output_np = sample_output.cpu().numpy()
+        
+        # Infer the model signature
+        signature = infer_signature(
+            sample_input_np,
+            sample_output_np
+        )
+        
+        # Log the model with the signature and input example
+        mlflow.pytorch.log_model(
+            trained_model, 
+            "model",
+            signature=signature,
+            input_example=sample_input_np
+        )
         
         return trained_model, final_metrics
 
