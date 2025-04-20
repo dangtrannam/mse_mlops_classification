@@ -5,4 +5,3 @@ flask
 numpy
 pyyaml
 tqdm
-gradio 

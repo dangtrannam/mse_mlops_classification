@@ -14,4 +14,3 @@ dependencies:
     - flask==2.3.2
     - pyyaml==6.0
     - tqdm==4.65.0
-    - gradio==3.35.1 
