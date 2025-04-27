@@ -124,7 +124,7 @@ python predict_client.py --generate
 To view the MLflow tracking UI:
 
 ```bash
-mlflow ui
+mlflow ui --port 5001
 ```
 
-Then open your browser and navigate to http://localhost:5000 to explore your experiments. 
+Then open your browser and navigate to http://localhost:5001 to explore your experiments. 
